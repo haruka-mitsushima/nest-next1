@@ -11,6 +11,7 @@ import { Msg, Jwt } from './interfaces/auth.interface';
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly jwt: JwtService,
     private readonly config: ConfigService,
   ) { }
   async signUp(dto: AuthDto): Promise<Msg> {
