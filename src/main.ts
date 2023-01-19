@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Request, ValidationPipe } from '@nestjs/common';
-import cookieParser, * as CookieParser from 'cookie-parser';
+import { ValidationPipe } from '@nestjs/common';
+import { Request } from 'express';
+import * as cookieParser from 'cookie-parser';
 import * as csurf from 'csurf';
 
 async function bootstrap() {
@@ -11,7 +12,19 @@ async function bootstrap() {
     credentials: true,
     origin: ['http://localhost:3000'],
   });
-  app.use(CookieParser());
-  await app.listen(3005);
+  app.use(cookieParser());
+  app.use(
+    csurf({
+      cookie: {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
+      },
+      value: (req: Request) => {
+        return req.header('csrf-token');
+      },
+    }),
+  );
+  await app.listen(process.env.port || 3005);
 }
 bootstrap();
